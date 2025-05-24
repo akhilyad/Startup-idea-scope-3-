@@ -1365,8 +1365,8 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
                     tooltip='Direct Route (Fallback)'
                ).add_to(m)
         
-              m.fit_bounds([source_coords, dest_coords])
-              return m
+            m.fit_bounds([source_coords, dest_coords])
+            return m
         
     except Exception as e:
         logger.error(f"Exception in render_multi_modal_route: {e}")
