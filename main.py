@@ -253,7 +253,7 @@ def page_calculate_emissions():
                             max_routes=1
                         )
                         
-                       st_folium(m, width=900, height=400)
+                       .st_folium(m, width=900, height=400)
             except Exception as e:
                 logger.error(f"Error in emissions calculation: {e}")
                 st.error(f"An error occurred: {str(e)}")
