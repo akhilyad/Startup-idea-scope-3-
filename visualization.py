@@ -1281,12 +1281,17 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
     try:
         source_coords = get_coords_func(route_data['source']['country'], route_data['source']['city'])
         dest_coords = get_coords_func(route_data['destination']['country'], route_data['destination']['city'])
-        m = folium.Map(location=[(source_coords[0] + dest_coords[0]) / 2, (source_coords[1] + dest_coords[1]) / 2], zoom_start=3, tiles='OpenStreetMap', control_scale=True)
+        m = folium.Map(
+            location=[(source_coords[0] + dest_coords[0]) / 2, (source_coords[1] + dest_coords[1]) / 2],
+            zoom_start=3,
+            tiles='OpenStreetMap',
+            control_scale=True
+        )
         m.add_child(MeasureControl())
-        
+
         # Plan the multi-modal route
         legs = plan_multi_modal_route(source_coords, dest_coords)
-        
+
         # Add legend
         legend_html = '<div style="position: fixed; bottom: 30px; left: 30px; z-index: 1000; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 13px; font-family: Arial, sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
         legend_html += '<div style="font-weight: bold; margin-bottom: 6px;">Legend</div>'
@@ -1296,20 +1301,20 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
             legend_html += f'<div style="margin-bottom: 4px;"><span style="display:inline-block;width:18px;height:4px;background:{style["color"]};border-radius:2px;margin-right:8px;{dash}"></span> {style["label"]}</div>'
         legend_html += '</div>'
         m.get_root().html.add_child(folium.Element(legend_html))
-        
-        # Add each leg and switchover marker
+
+        # Draw each leg
         for i, leg in enumerate(legs):
-    # Defensive: skip if mode not in styles
-            if leg['mode'] not in TRANSPORT_STYLES:
-                logger.error(f"Mode {leg['mode']} not in TRANSPORT_STYLES")
+            # Defensive: skip if mode not in styles
+            if 'mode' not in leg or leg['mode'] not in TRANSPORT_STYLES:
+                logger.error(f"Mode {leg.get('mode', None)} not in TRANSPORT_STYLES")
                 continue
             style = TRANSPORT_STYLES[leg['mode']]
-    # Defensive: skip if path is invalid (less than 2 points or all points identical)
-            if not leg['path'] or len(leg['path']) < 2 or all(p == leg['path'][0] for p in leg['path']):
-                logger.error(f"Leg {i} ({leg['mode']}) has invalid path: {leg['path']}")
+            # Defensive: skip if path is invalid (less than 2 points or all points identical)
+            if 'path' not in leg or not leg['path'] or len(leg['path']) < 2 or all(p == leg['path'][0] for p in leg['path']):
+                logger.error(f"Leg {i} ({leg.get('mode', None)}) has invalid path: {leg.get('path', None)}")
                 continue
 
-    # Draw the route
+            # Draw the route
             if leg['mode'] == 'Ship':
                 AntPath(
                     locations=leg['path'],
@@ -1331,7 +1336,7 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
                     tooltip=f"{leg['mode']} Route"
                 ).add_to(m)
 
-    # Add start marker for first leg
+            # Add start marker for first leg
             if i == 0:
                 folium.Marker(
                     location=leg['start'],
@@ -1339,7 +1344,7 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
                     icon=folium.Icon(color='green', icon='play')
                 ).add_to(m)
 
-    # Add switchover marker (except for last leg, which is the destination)
+            # Add switchover marker (except for last leg, which is the destination)
             if i < len(legs) - 1:
                 folium.Marker(
                     location=leg['end'],
@@ -1347,27 +1352,27 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
                     icon=folium.Icon(color='blue', icon='exchange')
                 ).add_to(m)
 
-    # Add end marker for last leg
+            # Add end marker for last leg
             if i == len(legs) - 1:
                 folium.Marker(
                     location=leg['end'],
                     tooltip=f"End: {leg['mode']}",
                     icon=folium.Icon(color='orange', icon='flag')
-               ).add_to(m)
-        
+                ).add_to(m)
+
         # Fallback: if no legs or all paths are empty, draw direct line
-            if not legs or all(len(leg['path']) < 2 for leg in legs):
-                folium.PolyLine(
-                    locations=[source_coords, dest_coords],
-                    color='black',
-                    weight=4,
-                    dash_array='5,10',
-                    tooltip='Direct Route (Fallback)'
-               ).add_to(m)
-        
-            m.fit_bounds([source_coords, dest_coords])
-            return m
-        
+        if not legs or all(len(leg['path']) < 2 for leg in legs):
+            folium.PolyLine(
+                locations=[source_coords, dest_coords],
+                color='black',
+                weight=4,
+                dash_array='5,10',
+                tooltip='Direct Route (Fallback)'
+            ).add_to(m)
+
+        m.fit_bounds([source_coords, dest_coords])
+        return m
+
     except Exception as e:
         logger.error(f"Exception in render_multi_modal_route: {e}")
         error_map = folium.Map(location=[0, 0], zoom_start=2)
