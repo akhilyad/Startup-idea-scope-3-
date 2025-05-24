@@ -238,6 +238,7 @@ def page_calculate_emissions():
                         weight_tons
                     )
                     # Show map
+                    # Show map
                     with st.spinner("Generating map..."):
                         m = visualization.render_emission_map(
                             pd.DataFrame([{
@@ -252,11 +253,10 @@ def page_calculate_emissions():
                             db.get_coordinates,
                             max_routes=1
                         )
-                        
-                       .st_folium(m, width=900, height=400)
-            except Exception as e:
-                logger.error(f"Error in emissions calculation: {e}")
-                st.error(f"An error occurred: {str(e)}")
+                        st_folium(m, width=900, height=400) 
+                    except Exception as e:
+                        logger.error(f"Error in emissions calculation: {e}")
+                        st.error(f"An error occurred: {str(e)}")
 
 def page_route_visualizer():
     st.header("Emission Hotspot Visualizer")
