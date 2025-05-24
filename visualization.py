@@ -1299,61 +1299,61 @@ def render_multi_modal_route(route_data: dict, get_coords_func) -> folium.Map:
         
         # Add each leg and switchover marker
         for i, leg in enumerate(legs):
-            # Defensive: skip if mode not in styles
-            if leg['mode'] not in TRANSPORT_STYLES:
-                logger.error(f"Mode {leg['mode']} not in TRANSPORT_STYLES")
-                continue
-            style = TRANSPORT_STYLES[leg['mode']]
-            # Defensive: skip if path is invalid (less than 2 points or all points identical)
-            if not leg['path'] or len(leg['path']) < 2 or all(p == leg['path'][0] for p in leg['path']):
-                logger.error(f"Leg {i} ({leg['mode']}) has invalid path: {leg['path']}")
-                continue
-            
-            # Draw the route
-            if leg['mode'] == 'Ship':
-                AntPath(
-                    locations=leg['path'],
-                    color=style['color'],
-                    weight=5,
-                    dash_array=[10, 20],
-                    pulse_color='#FFD700',
-                    delay=800,
-                    opacity=0.9,
-                    reverse=False,
-                    tooltip=f"{leg['mode']} Route"
-                ).add_to(m)
-            else:
-                folium.PolyLine(
-                    locations=leg['path'],
-                    color=style['color'],
-                    weight=5,
-                    dash_array=style.get('dash_array'),
-                    tooltip=f"{leg['mode']} Route"
-                ).add_to(m)
-            
-            # Add start marker for first leg
-            if i == 0:
-                folium.Marker(
-                    location=leg['start'],
-                    tooltip=f"Start: {leg['mode']}",
-                    icon=folium.Icon(color='green', icon='play')
-                ).add_to(m)
-            
-            # Add switchover marker (except for last leg, which is the destination)
-            if i < len(legs) - 1:
-                folium.Marker(
-                    location=leg['end'],
-                    tooltip=f"Switchover: {legs[i+1]['mode']}",
-                    icon=folium.Icon(color='blue', icon='exchange')
-                ).add_to(m)
-            
-            # Add end marker for last leg
-            if i == len(legs) - 1:
-                folium.Marker(
-                    location=leg['end'],
-                    tooltip=f"End: {leg['mode']}",
-                    icon=folium.Icon(color='orange', icon='flag')
-                ).add_to(m)
+    # Defensive: skip if mode not in styles
+    if leg['mode'] not in TRANSPORT_STYLES:
+        logger.error(f"Mode {leg['mode']} not in TRANSPORT_STYLES")
+        continue
+    style = TRANSPORT_STYLES[leg['mode']]
+    # Defensive: skip if path is invalid (less than 2 points or all points identical)
+    if not leg['path'] or len(leg['path']) < 2 or all(p == leg['path'][0] for p in leg['path']):
+        logger.error(f"Leg {i} ({leg['mode']}) has invalid path: {leg['path']}")
+        continue
+
+    # Draw the route
+    if leg['mode'] == 'Ship':
+        AntPath(
+            locations=leg['path'],
+            color=style['color'],
+            weight=5,
+            dash_array=[10, 20],
+            pulse_color='#FFD700',
+            delay=800,
+            opacity=0.9,
+            reverse=False,
+            tooltip=f"{leg['mode']} Route"
+        ).add_to(m)
+    else:
+        folium.PolyLine(
+            locations=leg['path'],
+            color=style['color'],
+            weight=5,
+            dash_array=style.get('dash_array'),
+            tooltip=f"{leg['mode']} Route"
+        ).add_to(m)
+
+    # Add start marker for first leg
+    if i == 0:
+        folium.Marker(
+            location=leg['start'],
+            tooltip=f"Start: {leg['mode']}",
+            icon=folium.Icon(color='green', icon='play')
+        ).add_to(m)
+
+    # Add switchover marker (except for last leg, which is the destination)
+    if i < len(legs) - 1:
+        folium.Marker(
+            location=leg['end'],
+            tooltip=f"Switchover: {legs[i+1]['mode']}",
+            icon=folium.Icon(color='blue', icon='exchange')
+        ).add_to(m)
+
+    # Add end marker for last leg
+    if i == len(legs) - 1:
+        folium.Marker(
+            location=leg['end'],
+            tooltip=f"End: {leg['mode']}",
+            icon=folium.Icon(color='orange', icon='flag')
+        ).add_to(m)
         
         # Fallback: if no legs or all paths are empty, draw direct line
         if not legs or all(len(leg['path']) < 2 for leg in legs):
