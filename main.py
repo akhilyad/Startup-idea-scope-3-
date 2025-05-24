@@ -253,7 +253,7 @@ def page_calculate_emissions():
                             max_routes=1
                         )
                         import streamlit_folium
-                        streamlit_folium.folium_static(m, width=900, height=400)
+                        streamlit_folium.st.folium(m, width=900, height=400)
             except Exception as e:
                 logger.error(f"Error in emissions calculation: {e}")
                 st.error(f"An error occurred: {str(e)}")
@@ -272,7 +272,7 @@ def page_route_visualizer():
             import streamlit_folium
             with st.spinner("Loading map..."):
                 m = visualization.render_emission_map(emissions_df, db.get_coordinates)
-                streamlit_folium.folium_static(m, width=1200, height=600)
+                streamlit_folium.st.folium(m, width=1200, height=600)
 
             st.subheader("Route Analytics Dashboard")
             routes = [f"Route {idx + 1}: {row['source']} to {row['destination']}" for idx, row in emissions_df.iterrows()]
@@ -323,7 +323,7 @@ def page_route_visualizer():
 
                 # Render multi-modal route visualization
                 m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-                streamlit_folium.folium_static(m, width=1200, height=600)
+                streamlit_folium.st.folium(m, width=1200, height=600)
 
                 st.subheader("Key Performance Indicators (KPIs)")
                 col1, col2, col3, col4 = st.columns(4)
@@ -691,7 +691,7 @@ def page_optimized_route_planning():
                 }
             }
             m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-            streamlit_folium.folium_static(m, width=900, height=400)
+            streamlit_folium.st.folium(m, width=900, height=400)
             st.subheader("Optimization Results")
             col1, col2, col3, col4 = st.columns(4)
             with col1:
