@@ -7,7 +7,7 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from streamlit_folium import st_folium
+from import st_folium
 import emissions
 import visualization
 import ui
@@ -252,8 +252,8 @@ def page_calculate_emissions():
                             db.get_coordinates,
                             max_routes=1
                         )
-                        import streamlit_folium
-                        streamlit_folium.st.folium(m, width=900, height=400)
+                        
+                       .st_folium(m, width=900, height=400)
             except Exception as e:
                 logger.error(f"Error in emissions calculation: {e}")
                 st.error(f"An error occurred: {str(e)}")
@@ -269,10 +269,10 @@ def page_route_visualizer():
             emissions_df['dest_country'] = emissions_df['destination'].apply(lambda x: x.split(', ')[1])
             emissions_df['dest_city'] = emissions_df['destination'].apply(lambda x: x.split(', ')[0])
 
-            import streamlit_folium
+            
             with st.spinner("Loading map..."):
                 m = visualization.render_emission_map(emissions_df, db.get_coordinates)
-                streamlit_folium.st.folium(m, width=1200, height=600)
+               .st_folium(m, width=1200, height=600)
 
             st.subheader("Route Analytics Dashboard")
             routes = [f"Route {idx + 1}: {row['source']} to {row['destination']}" for idx, row in emissions_df.iterrows()]
@@ -323,7 +323,7 @@ def page_route_visualizer():
 
                 # Render multi-modal route visualization
                 m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-                streamlit_folium.st.folium(m, width=1200, height=600)
+               .st_folium(m, width=1200, height=600)
 
                 st.subheader("Key Performance Indicators (KPIs)")
                 col1, col2, col3, col4 = st.columns(4)
@@ -678,7 +678,7 @@ def page_optimized_route_planning():
             savings_pct = (savings / current_co2 * 100) if current_co2 != 0 else 0
             cost_savings_eur = savings / 1000 * CARBON_PRICE_EUR_PER_TON
             trees_equivalent = savings * 0.04
-            import streamlit_folium
+          
             # Build route_data for multi-modal visualization
             route_data = {
                 'source': {
@@ -691,7 +691,7 @@ def page_optimized_route_planning():
                 }
             }
             m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-            streamlit_folium.st.folium(m, width=900, height=400)
+           .st_folium(m, width=900, height=400)
             st.subheader("Optimization Results")
             col1, col2, col3, col4 = st.columns(4)
             with col1:
