@@ -272,7 +272,7 @@ def page_route_visualizer():
             
             with st.spinner("Loading map..."):
                 m = visualization.render_emission_map(emissions_df, db.get_coordinates)
-               .st_folium(m, width=1200, height=600)
+                st_folium(m, width=1200, height=600)
 
             st.subheader("Route Analytics Dashboard")
             routes = [f"Route {idx + 1}: {row['source']} to {row['destination']}" for idx, row in emissions_df.iterrows()]
@@ -323,7 +323,7 @@ def page_route_visualizer():
 
                 # Render multi-modal route visualization
                 m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-               .st_folium(m, width=1200, height=600)
+                st_folium(m, width=1200, height=600)
 
                 st.subheader("Key Performance Indicators (KPIs)")
                 col1, col2, col3, col4 = st.columns(4)
@@ -691,7 +691,7 @@ def page_optimized_route_planning():
                 }
             }
             m = visualization.render_multi_modal_route(route_data, db.get_coordinates)
-           .st_folium(m, width=900, height=400)
+            st_folium(m, width=900, height=400)
             st.subheader("Optimization Results")
             col1, col2, col3, col4 = st.columns(4)
             with col1:
