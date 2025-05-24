@@ -7,7 +7,7 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from import st_folium
+from streamlit_folium import st_folium
 import emissions
 import visualization
 import ui
