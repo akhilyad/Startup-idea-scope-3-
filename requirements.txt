@@ -13,4 +13,5 @@ PyYAML
 openrouteservice
 networkx
 streamlit-folium
+python-dotenv
 # Add any other dependencies you use below
